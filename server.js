@@ -21,16 +21,21 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
+app.get("/", (req, res) => {
+  res.send("Welcome!");
+})
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//URL page
 app.get("/urls", (req,res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
-
+//create new shortURL page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -45,7 +50,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-
+//When the form is submitted, it redirects to urls_show page with the new longURL and shortURL
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(req.body.longURL);
