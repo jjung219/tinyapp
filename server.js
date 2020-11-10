@@ -14,13 +14,8 @@ const urlDatabase = {
 
 
 const generateRandomString = () => {
-  let randomString = Math.floor(Math.random() * 100000).toString(16);
-  while (randomString.length < 7) {
-    randomString += 'a';
-  }
-  return randomString;
-
-}
+  return Math.random().toString(36).substring(2, 8);
+};
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
@@ -42,10 +37,24 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
-  res.render("urls_show", templateVars);
+
+  if (urlDatabase[req.params.shortURL]) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.send("URL not found.");
+  }
 });
 
+
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString(req.body.longURL);
+  urlDatabase[shortURL] = longURL;
+  
+  res.redirect(`/urls/${shortURL}`);
+});
+
+app.get("/u/:shortURL", (req,res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
