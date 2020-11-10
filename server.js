@@ -38,7 +38,8 @@ app.get("/urls", (req,res) => {
 
 //create new shortURL page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {username: req.cookies["username"]};
+  res.render("urls_new", templateVars);
 });
 
 //When the form is submitted, it redirects to urls_show page with the new longURL and shortURL
