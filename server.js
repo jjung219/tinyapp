@@ -53,7 +53,7 @@ app.get("/urls/:shortURL", (req, res) => {
 //When the form is submitted, it redirects to urls_show page with the new longURL and shortURL
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
-  const shortURL = generateRandomString(req.body.longURL);
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   
   res.redirect(`/urls/${shortURL}`);
