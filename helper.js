@@ -20,4 +20,12 @@ const validateUser = (usersObj, email, password) => {
   return { error: 'email', user: null};
 };
 
-module.exports = { existingUser, validateUser };
+const fetchUser = (usersObj, email) => {
+  for (const user in usersObj) {
+    if (usersObj[user].email === email) {
+      return user;
+    }
+  }
+};
+
+module.exports = { existingUser, validateUser, fetchUser };

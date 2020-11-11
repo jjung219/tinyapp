@@ -4,7 +4,7 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const port = 8080;
 
-const { existingUser } = require('./helper');
+const { existingUser, validateUser, fetchUser } = require('./helper');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -101,18 +101,18 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  //look up in the usersObj
-  if (existingUser(users, email)) {
 
+  const validated =  validateUser(users, email, password);
+  if (validated.error) {
+    res.status(403);
+    res.send(`Invalid ${validated.error}.`);
   }
 
-
+  res.cookie('user_id', fetchUser(users, email));
   res.redirect('/urls');
 });
 
-// app.get('/login', (req, res) => {
-//   console.log(req.cookies["username"].username);
-// });
+
 
 //LOG OUT
 app.post("/logout", (req, res) => {
