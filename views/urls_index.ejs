@@ -22,15 +22,17 @@
         </tr>
       </thead>
       <tbody>
-        <% for(let url in urls) { %>
-          <tr>
-            <td><%= url %></td>
-            <td><%= urls[url] %></td>
-            <td><button class="btn" style="border: rgb(95, 128, 228) solid thin;"><a href="/urls/<%= url %>" style="text-decoration: none;" >Edit</a></button></td>
-            <form method="POST" action="/urls/<%= url %>/delete">
-              <td><button type="submit" class="btn" style="color: rgba(202, 0, 0, 0.719); border: rgba(202, 0, 0, 0.719) solid thin;">Delete</button></td>
-            </form>
+        <% if (user) { %>
+          <% for(let url in urls) { %>
+            <tr>
+              <td><%= url %></td>
+              <td><%= urls[url].longURL %></td>
+              <td><button class="btn" style="border: rgb(95, 128, 228) solid thin;"><a href="/urls/<%= url %>" style="text-decoration: none;" >Edit</a></button></td>
+              <form method="POST" action="/urls/<%= url %>/delete">
+                <td><button type="submit" class="btn" style="color: rgba(202, 0, 0, 0.719); border: rgba(202, 0, 0, 0.719) solid thin;">Delete</button></td>
+              </form>
             </tr>
+          <% } %>
         <% } %>
       </tbody>
     </table>

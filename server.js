@@ -12,8 +12,8 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = { 
@@ -45,6 +45,8 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {user: users[userId], urls: urlDatabase };
+
+  
   res.render("urls_index", templateVars);
 });
 
@@ -60,25 +62,27 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-//When the form is submitted, it redirects to urls_show page with the new longURL and shortURL
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {};
+  urlDatabase[shortURL].longURL = longURL;
   
   res.redirect(`/urls/${shortURL}`);
 });
 
+
 //url redirect to longUrl page
 app.get("/u/:shortURL", (req,res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const urlObj = urlDatabase[req.params.shortURL]
+  const longURL = urlObj.longURL;
   res.redirect(longURL);
 });
 
 //show url page
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"];
-  const templateVars = {user: users[userId], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = {user: users[userId], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
 
   if (urlDatabase[req.params.shortURL]) {
     res.render("urls_show", templateVars);
@@ -95,7 +99,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //edit URL
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.newURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 
