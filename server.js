@@ -95,12 +95,19 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 //LOG IN
-app.post('/login', (req, res) => {
+app.get('/login', (req, res) => {
   res.render('login');
 });
 
 app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  //look up in the usersObj
+  if (existingUser(users, email)) {
 
+  }
+
+
+  res.redirect('/urls');
 });
 
 // app.get('/login', (req, res) => {
