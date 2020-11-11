@@ -96,7 +96,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 //LOG IN
 app.get('/login', (req, res) => {
-  res.render('login');
+  const userId = req.cookies.user_id
+  const templateVars = {user: users[userId]};
+  res.render('login', templateVars);
 });
 
 app.post('/login', (req, res) => {

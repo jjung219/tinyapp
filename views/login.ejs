@@ -10,17 +10,18 @@
     <title>Register</title>
   </head>
 <body>
+  <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>Log In</h3>
     <div>
       <form action="/login" method="POST">
-        <label for="email">Email</label>
+        <label for="email">Email</label><br>
         <input type="email" name="email" id="email" placeholder="Enter email">
         <br>
-        <label for="password">Password</label>
+        <label for="password">Password</label><br>
         <input type="password" name="password" id="password" placeholder="Enter password">
         <br>
-        <button type="submit">Log In</button>
+        <button type="submit" class="btn btn-primary">Log In</button>
       </form>
     </div>
   </main>
