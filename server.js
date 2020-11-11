@@ -96,8 +96,11 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 //LOG IN
 app.post('/login', (req, res) => {
-  res.cookie('user_id', req.body.user_id);
-  res.redirect('/urls');
+  res.render('login');
+});
+
+app.post('/login', (req, res) => {
+
 });
 
 // app.get('/login', (req, res) => {
@@ -114,7 +117,7 @@ app.post("/logout", (req, res) => {
 app.get('/register', (req, res) => {
   const userId = req.cookies.user_id
   const templateVars = {user: users[userId]};
-  res.render('urls_register', templateVars);
+  res.render('register', templateVars);
 });
 
 app.post('/register', (req, res) => {
