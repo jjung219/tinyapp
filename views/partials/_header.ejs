@@ -9,18 +9,19 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         <div>
-            <% if (username) {%>
+            <% if (user) {%>
               <form method="POST" action="/logout">
-                <label for="username">User: <%= username %></label>
+                <label for="user">User: <%= user.email %></label>
                 <button type="submit" class="btn btn-light">Log Out</button> 
               </form>
             <% } else {%>
               <form method="POST" action="/login">
-                <input type="text" name="username" placeholder="Username">
+                <input type="text" name="user_id" placeholder="User">
                 <button type="submit" class="btn btn-light">Log In</button>
               </form>
             <% } %>
         </div>
+        <a class="nav-item nav-link" href="/register">Register</a>
       </div>
     </div>
   </nav>
