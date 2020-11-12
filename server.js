@@ -113,9 +113,10 @@ app.get("/urls/:shortURL", (req, res) => {
   if (urlDatabase[shortURL]) {
     if (urlDatabase[shortURL].userID === userId) {
       res.render("urls_show", templateVars);
+    } else {
+      res.redirect("/login");
     }
   }
-  res.redirect("/login")
 
 });
 
