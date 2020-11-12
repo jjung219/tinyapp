@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const cookieParser = require('cookie-parser');
 const port = 8080;
@@ -153,8 +154,9 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const validated =  validateUser(users, email, password);
+  const validated =  validateUser(users, email, hashedPassword);
   if (validated.error) {
     res.status(403);
     res.send(`Invalid ${validated.error}.`);
@@ -181,6 +183,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
   const {email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === '') {
     res.status(400);
@@ -200,7 +203,7 @@ app.post('/register', (req, res) => {
   users[id] = {};
   users[id].id = id;
   users[id].email = email;
-  users[id].password = password;
+  users[id].password = hashedPassword;
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
