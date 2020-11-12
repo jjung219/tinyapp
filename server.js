@@ -16,6 +16,7 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
+//for test purposes
 const users = { 
   "aJ48lW": {
     id: "aJ48lW", 
@@ -113,7 +114,7 @@ app.get("/urls/:shortURL", (req, res) => {
       res.render("urls_show", templateVars);
     }
   }
-  res.send("Access not allowed. Please login");
+  res.redirect("/login")
 
 });
 
@@ -125,8 +126,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[shortURL].userID === userId) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
+  } else {
+    res.redirect("/login")
   }
-  res.send("Access not allowed. Please login");
 });
 
 //EDIT URL
@@ -137,8 +139,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   if (urlDatabase[shortURL].userID === userId) {
     urlDatabase[shortURL].longURL = req.body.newURL;
     return res.redirect(`/urls/${req.params.shortURL}`);
+  } else {
+    res.redirect("/login")
   }
-  res.send("Access not allowed. Please login");
 });
 
 //LOG IN
@@ -198,7 +201,6 @@ app.post('/register', (req, res) => {
   users[id].id = id;
   users[id].email = email;
   users[id].password = password;
-  console.log(req.body)
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
