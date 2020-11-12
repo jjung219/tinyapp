@@ -21,19 +21,19 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
-//for test purposes
-const users = { 
+//Two Below users are for test purposes
+const users = {
   "aJ48lW": {
-    id: "aJ48lW", 
-    email: "a@aa.com", 
+    id: "aJ48lW",
+    email: "a@aa.com",
     password: "123"
   },
   "1": {
-    id: "1", 
-    email: "b@bb.com", 
+    id: "1",
+    email: "b@bb.com",
     password: "123"
   }
-}
+};
 
 
 const generateRandomString = () => {
@@ -46,7 +46,7 @@ app.listen(port, () => {
 
 app.get("/", (req, res) => {
   res.send("Welcome!");
-})
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -55,7 +55,7 @@ app.get("/urls.json", (req, res) => {
 
 
 // Function to return an object with the user's urls
-// Used in INDEX page
+// Used in INDEX
 const urlsForUser = id => {
   let userUrls = {};
   for (const url in urlDatabase) {
@@ -67,7 +67,7 @@ const urlsForUser = id => {
 };
 
 
-//URL INDEX page
+//URL INDEX
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
   const userUrlDatabase = urlsForUser(userId);
@@ -76,13 +76,13 @@ app.get("/urls", (req,res) => {
   //If user is not logged in, redirect to login page
   if (!userId) {
     return res.redirect("/login");
-  };
+  }
 
   res.render("urls_index", templateVars);
 });
 
 
-//CREATE NEW URL page
+//CREATE NEW URL GET
 app.get("/urls/new", (req, res) => {
   const userId = req.session["user_id"];
   const templateVars = {user: users[userId]};
@@ -94,6 +94,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+//CREATE NEW URL POST
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
@@ -105,84 +106,83 @@ app.post("/urls", (req, res) => {
 });
 
 
-//url redirect to longUrl page
+//REDIRECTION to longURL 
 app.get("/u/:shortURL", (req,res) => {
   const urlObj = urlDatabase[req.params.shortURL];
   let longURL;
 
   if (urlObj === undefined) {
-    return res.send("Sorry, could not find URL for the corresponding id")
+    return res.send("Sorry, could not find URL for the corresponding id");
   } else {
     longURL = urlObj.longURL;
   }
   res.redirect(longURL);
 });
 
-//SHOW page
+//SHOW SHORTURL DETAIL GET
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session["user_id"];
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
   const templateVars = {user: users[userId], shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   
   if (!userId) {
-    return res.send("Please log in to access the URLs")
+    return res.send("Please log in to access the URLs");
   }
 
   if (urlDatabase[shortURL]) {
     if (urlDatabase[shortURL].userID === userId) {
       res.render("urls_show", templateVars);
     } else {
-      res.send("Sorry, access denied")
+      res.send("Sorry, access denied");
     }
   }
 
 });
 
-//DELETE URL 
+//DELETE URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userId = req.session["user_id"];
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
 
   if (urlDatabase[shortURL].userID === userId) {
-    delete urlDatabase[req.params.shortURL];
+    delete urlDatabase.shortURL;
     res.redirect("/urls");
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
 //EDIT URL
 app.post("/urls/:shortURL/edit", (req, res) => {
   const userId = req.session["user_id"];
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
 
   if (urlDatabase[shortURL].userID === userId) {
     urlDatabase[shortURL].longURL = req.body.newURL;
     return res.redirect(`/urls`);
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
-//LOG IN
+//LOG IN GET
 app.get('/login', (req, res) => {
-  const userId = req.session.user_id
+  const userId = req.session.user_id;
   const templateVars = {user: users[userId]};
 
   if (userId) {
     return res.redirect("/urls");
   }
-
   res.render('login', templateVars);
 });
 
+//LOG IN POST
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
   const validated =  validateUser(users, email, password);
   if (validated.error) {
-    res.status(403);
-    res.send(`Invalid ${validated.error}.`);
+    res.status(403).send(`Invalid ${validated.error}.`);
   }
 
   req.session['user_id'] = getUserByEmail(users, email);
@@ -190,12 +190,12 @@ app.post('/login', (req, res) => {
 });
 
 
-
 //LOG OUT
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
+
 
 //REGISTER GET
 app.get('/register', (req, res) => {
@@ -209,10 +209,12 @@ app.get('/register', (req, res) => {
   res.render('register', templateVars);
 });
 
-//REGISTER POST
+
+//Function that adds a new user
+//Used in the REGISTER POST
 const addNewUser = (email, password) => {
   const userId = Object.keys(users).length + 1;
-
+  
   const newUserObj = {
     id: userId,
     email,
@@ -220,20 +222,21 @@ const addNewUser = (email, password) => {
   };
   users[userId] = newUserObj;
   return userId;
-}
+};
+
+//REGISTER POST
 app.post('/register', (req, res) => {
   const {email, password } = req.body;
  
   if (email === '') {
     res.status(400).send("Please enter email");
-  } else if (password =='') {
+  } else if (password === '') {
     res.status(400).send("Please enter password");
-  };
+  }
 
-  //if existingUser(obj) is true, the user already exists
-  if (existingUser(users, email)) {
+  if (existingUser(users, email)) { //If ture, the user already exists
     return res.status(400).send("User already exists");
-  };
+  }
   
   const userId = addNewUser(email, password);
   req.session['user_id'] = userId;
