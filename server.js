@@ -17,11 +17,16 @@ const urlDatabase = {
 };
 
 const users = { 
-  "1": {
-    id: "1", 
+  "aJ48lW": {
+    id: "aJ48lW", 
     email: "a@aa.com", 
     password: "123"
   },
+  "1": {
+    id: "1", 
+    email: "b@bb.com", 
+    password: "123"
+  }
 }
 
 
@@ -41,16 +46,32 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//URL page
+
+
+// Function to return an object with the user's urls
+// Used in INDEX page
+const urlsForUser = id => {
+  let userUrls = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      userUrls[url] = urlDatabase[url];
+    }
+  }
+  return userUrls;
+};
+
+
+//URL INDEX page
 app.get("/urls", (req,res) => {
   const userId = req.cookies["user_id"];
-  const templateVars = {user: users[userId], urls: urlDatabase };
+  const userUrlDatabase = urlsForUser(userId);
+  const templateVars = {user: users[userId], urls: userUrlDatabase };
 
-  
   res.render("urls_index", templateVars);
 });
 
-//create new shortURL page
+
+//CREATE NEW URL page
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {user: users[userId]};
@@ -65,9 +86,10 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = {};
-  urlDatabase[shortURL].longURL = longURL;
-  
+  const userID = req.cookies["user_id"];
+
+  urlDatabase[shortURL] = { longURL, userID };
+
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -79,28 +101,44 @@ app.get("/u/:shortURL", (req,res) => {
   res.redirect(longURL);
 });
 
-//show url page
+//SHOW page
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"];
-  const templateVars = {user: users[userId], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
+  const shortURL = req.params.shortURL
+  const templateVars = {user: users[userId], shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
 
-  if (urlDatabase[req.params.shortURL]) {
-    res.render("urls_show", templateVars);
-  } else {
-    res.send("URL not found.");
+
+  if (urlDatabase[shortURL]) {
+    if (urlDatabase[shortURL].userID === userId) {
+      res.render("urls_show", templateVars);
+    }
   }
+  res.send("Access not allowed. Please login");
+
 });
 
-//delete URL 
+//DELETE URL 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  const userId = req.cookies["user_id"];
+  const shortURL = req.params.shortURL
+
+  if (urlDatabase[shortURL].userID === userId) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }
+  res.send("Access not allowed. Please login");
 });
 
-//edit URL
+//EDIT URL
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
-  res.redirect(`/urls/${req.params.shortURL}`);
+  const userId = req.cookies["user_id"];
+  const shortURL = req.params.shortURL
+
+  if (urlDatabase[shortURL].userID === userId) {
+    urlDatabase[shortURL].longURL = req.body.newURL;
+    return res.redirect(`/urls/${req.params.shortURL}`);
+  }
+  res.send("Access not allowed. Please login");
 });
 
 //LOG IN
@@ -164,4 +202,3 @@ app.post('/register', (req, res) => {
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
-

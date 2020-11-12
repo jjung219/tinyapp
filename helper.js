@@ -28,4 +28,5 @@ const fetchUser = (usersObj, email) => {
   }
 };
 
+
 module.exports = { existingUser, validateUser, fetchUser };
