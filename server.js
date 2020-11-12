@@ -107,8 +107,14 @@ app.post("/urls", (req, res) => {
 
 //url redirect to longUrl page
 app.get("/u/:shortURL", (req,res) => {
-  const urlObj = urlDatabase[req.params.shortURL]
-  const longURL = urlObj.longURL;
+  const urlObj = urlDatabase[req.params.shortURL];
+  let longURL;
+
+  if (urlObj === undefined) {
+    return res.send("Sorry, could not find URL for the corresponding id")
+  } else {
+    longURL = urlObj.longURL;
+  }
   res.redirect(longURL);
 });
 
@@ -117,13 +123,16 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session["user_id"];
   const shortURL = req.params.shortURL
   const templateVars = {user: users[userId], shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
-
+  
+  if (!userId) {
+    return res.send("Please log in to access the URLs")
+  }
 
   if (urlDatabase[shortURL]) {
     if (urlDatabase[shortURL].userID === userId) {
       res.render("urls_show", templateVars);
     } else {
-      res.redirect("/login");
+      res.send("Sorry, access denied")
     }
   }
 
@@ -149,7 +158,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
   if (urlDatabase[shortURL].userID === userId) {
     urlDatabase[shortURL].longURL = req.body.newURL;
-    return res.redirect(`/urls/${req.params.shortURL}`);
+    return res.redirect(`/urls`);
   } else {
     res.redirect("/login")
   }
@@ -159,6 +168,11 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.get('/login', (req, res) => {
   const userId = req.session.user_id
   const templateVars = {user: users[userId]};
+
+  if (userId) {
+    return res.redirect("/urls");
+  }
+
   res.render('login', templateVars);
 });
 
@@ -187,6 +201,11 @@ app.post("/logout", (req, res) => {
 app.get('/register', (req, res) => {
   const userId = req.session["user_id"];
   const templateVars = {user: users[userId]};
+
+  if (userId) {
+    return res.redirect("/urls");
+  }
+
   res.render('register', templateVars);
 });
 
@@ -217,7 +236,6 @@ app.post('/register', (req, res) => {
   };
   
   const userId = addNewUser(email, password);
-  console.log(users);
   req.session['user_id'] = userId;
   res.redirect('/urls');
 });
