@@ -73,6 +73,11 @@ app.get("/urls", (req,res) => {
   const userUrlDatabase = urlsForUser(userId);
   const templateVars = {user: users[userId], urls: userUrlDatabase };
 
+  //If user is not logged in, redirect to login page
+  if (!userId) {
+    return res.redirect("/login");
+  };
+
   res.render("urls_index", templateVars);
 });
 
@@ -166,7 +171,7 @@ app.post('/login', (req, res) => {
     res.send(`Invalid ${validated.error}.`);
   }
 
-  res.cookie('user_id', getUserByEmail(users, email));
+  req.session['user_id'] = getUserByEmail(users, email);
   res.redirect('/urls');
 });
 
@@ -199,8 +204,7 @@ const addNewUser = (email, password) => {
 }
 app.post('/register', (req, res) => {
   const {email, password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  console.log(req.body)
+ 
   if (email === '') {
     res.status(400).send("Please enter email");
   } else if (password =='') {
@@ -212,10 +216,8 @@ app.post('/register', (req, res) => {
     return res.status(400).send("User already exists");
   };
   
-  
-  const id = generateRandomString()
   const userId = addNewUser(email, password);
-
+  console.log(users);
   req.session['user_id'] = userId;
   res.redirect('/urls');
 });
