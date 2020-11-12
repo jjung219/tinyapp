@@ -11,7 +11,7 @@ const existingUser = (usersObj, email) => {
 const validateUser = (usersObj, email, password) => {
   for (const user in usersObj) {
     if (usersObj[user].email === email) {
-      if (bcrypt.compareSync(usersObj[user].password, password)) {
+      if (user && bcrypt.compareSync(password, usersObj[user].password)) {
         return { error: null, user };
       } else {
         return { error: 'password', user: null};
@@ -21,7 +21,7 @@ const validateUser = (usersObj, email, password) => {
   return { error: 'email', user: null};
 };
 
-const fetchUser = (usersObj, email) => {
+const getUserByEmail = (usersObj, email) => {
   for (const user in usersObj) {
     if (usersObj[user].email === email) {
       return user;
@@ -29,5 +29,4 @@ const fetchUser = (usersObj, email) => {
   }
 };
 
-
-module.exports = { existingUser, validateUser, fetchUser };
+module.exports = { existingUser, validateUser, getUserByEmail };
