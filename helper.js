@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 
+//checks whether the user exists by checking if the user's email exists in the user databse
 const existingUser = (usersObj, email) => {
   for (const user in usersObj) {
     if (usersObj[user].email === email) {
@@ -8,6 +9,8 @@ const existingUser = (usersObj, email) => {
   }
 };
 
+//validates the user by checking whether the email exists in the user database and whether the passwords matches
+//returns an object with an error when they don't match
 const validateUser = (usersObj, email, password) => {
   for (const user in usersObj) {
     if (usersObj[user].email === email) {
@@ -21,6 +24,7 @@ const validateUser = (usersObj, email, password) => {
   return { error: 'email', user: null};
 };
 
+// returns the user obj by looking in the user database with the email provided
 const getUserByEmail = (usersObj, email) => {
   for (const user in usersObj) {
     if (usersObj[user].email === email) {
