@@ -1,5 +1,10 @@
 const bcrypt = require('bcrypt');
 
+//generates random string containing 6 characters, used to generate id
+const generateRandomString = () => {
+  return Math.random().toString(36).substring(2, 8);
+};
+
 //checks whether the user exists by checking if the user's email exists in the user databse
 const existingUser = (usersObj, email) => {
   for (const user in usersObj) {
@@ -37,7 +42,7 @@ const getUserByEmail = (usersObj, email) => {
 // Used in INDEX
 const urlsForUser = (id, urlDb) => {
   let userUrls = {};
-  for (const url in urlD) {
+  for (const url in urlDb) {
     if (urlDb[url].userID === id) {
       userUrls[url] = urlDb[url];
     }
@@ -47,16 +52,16 @@ const urlsForUser = (id, urlDb) => {
 
 //Function that adds a new user
 //Used in the REGISTER POST
-const addNewUser = (email, password) => {
-  const userId = Object.keys(users).length + 1;
+const addNewUser = (email, password, userDb) => {
+  const userId = generateRandomString;
   
   const newUserObj = {
     id: userId,
     email,
     password: bcrypt.hashSync(password, 10)
   };
-  users[userId] = newUserObj;
+  userDb[userId] = newUserObj;
   return userId;
 };
 
-module.exports = { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser };
+module.exports = { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser, generateRandomString };

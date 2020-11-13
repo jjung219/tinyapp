@@ -5,7 +5,7 @@ const app = express();
 const cookieSession = require('cookie-session');
 const port = 8080;
 
-const { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser } = require('./helper');
+const { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser, generateRandomString } = require('./helper');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -32,11 +32,6 @@ const users = {
     email: "b@bb.com",
     password: "123"
   }
-};
-
-
-const generateRandomString = () => {
-  return Math.random().toString(36).substring(2, 8);
 };
 
 app.listen(port, () => {
@@ -208,8 +203,7 @@ app.post('/register', (req, res) => {
   if (existingUser(users, email)) { //If true, the user already exists
     return res.status(400).send("User already exists");
   }
-  console.log(user);
-  const userId = addNewUser(email, password);
+  const userId = addNewUser(email, password, users);
   req.session['user_id'] = userId;
   res.redirect('/urls');
 });
