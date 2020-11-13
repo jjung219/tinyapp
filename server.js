@@ -46,7 +46,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-
 //URL INDEX
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
@@ -60,7 +59,6 @@ app.get("/urls", (req,res) => {
 
   res.render("urls_index", templateVars);
 });
-
 
 //CREATE NEW URL GET
 app.get("/urls/new", (req, res) => {
@@ -169,13 +167,11 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-
 //LOG OUT
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
-
 
 //REGISTER GET
 app.get('/register', (req, res) => {
@@ -188,7 +184,6 @@ app.get('/register', (req, res) => {
 
   res.render('register', templateVars);
 });
-
 
 //REGISTER POST
 app.post('/register', (req, res) => {
