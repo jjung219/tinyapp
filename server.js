@@ -4,9 +4,8 @@ const bcrypt = require('bcrypt');
 const app = express();
 const cookieSession = require('cookie-session');
 const port = 8080;
-const saltRounds = 10;
 
-const { existingUser, validateUser, getUserByEmail } = require('./helper');
+const { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser } = require('./helper');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -53,24 +52,10 @@ app.get("/urls.json", (req, res) => {
 });
 
 
-
-// Function to return an object with the user's urls
-// Used in INDEX
-const urlsForUser = id => {
-  let userUrls = {};
-  for (const url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      userUrls[url] = urlDatabase[url];
-    }
-  }
-  return userUrls;
-};
-
-
 //URL INDEX
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
-  const userUrlDatabase = urlsForUser(userId);
+  const userUrlDatabase = urlsForUser(userId, urlDatabase);
   const templateVars = {user: users[userId], urls: userUrlDatabase };
 
   //If user is not logged in, redirect to login page
@@ -182,7 +167,7 @@ app.post('/login', (req, res) => {
 
   const validated =  validateUser(users, email, password);
   if (validated.error) {
-    res.status(403).send(`Invalid ${validated.error}.`);
+    return res.status(403).send(`Invalid ${validated.error}.`);
   }
 
   req.session['user_id'] = getUserByEmail(users, email);
@@ -210,34 +195,20 @@ app.get('/register', (req, res) => {
 });
 
 
-//Function that adds a new user
-//Used in the REGISTER POST
-const addNewUser = (email, password) => {
-  const userId = Object.keys(users).length + 1;
-  
-  const newUserObj = {
-    id: userId,
-    email,
-    password: bcrypt.hashSync(password, saltRounds)
-  };
-  users[userId] = newUserObj;
-  return userId;
-};
-
 //REGISTER POST
 app.post('/register', (req, res) => {
   const {email, password } = req.body;
  
   if (email === '') {
-    res.status(400).send("Please enter email");
+    return res.status(400).send("Please enter email");
   } else if (password === '') {
-    res.status(400).send("Please enter password");
+    return res.status(400).send("Please enter password");
   }
 
-  if (existingUser(users, email)) { //If ture, the user already exists
+  if (existingUser(users, email)) { //If true, the user already exists
     return res.status(400).send("User already exists");
   }
-  
+  console.log(user);
   const userId = addNewUser(email, password);
   req.session['user_id'] = userId;
   res.redirect('/urls');
