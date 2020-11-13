@@ -145,7 +145,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
 
   if (urlDatabase[shortURL].userID === userId) {
-    delete urlDatabase.shortURL;
+    delete urlDatabase[shortURL];
     res.redirect("/urls");
   } else {
     res.redirect("/login");
