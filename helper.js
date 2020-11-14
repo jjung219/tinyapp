@@ -24,7 +24,7 @@ const validateUser = (usersObj, email, password) => {
       } else {
         return { error: 'password', user: null};
       }
-    } 
+    }
   }
   return { error: 'email', user: null};
 };

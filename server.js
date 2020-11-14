@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
 const app = express();
 const cookieSession = require('cookie-session');
 const port = 8080;
@@ -55,11 +54,11 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
   const userUrlDatabase = urlsForUser(userId, urlDatabase);
-  const templateVars = {user: users[userId], urls: userUrlDatabase, error: null };
-  console.log(userUrlDatabase);
-  //If user is not logged in, redirect to login page
+  const templateVars = {user: users[userId], urls: userUrlDatabase, error: null};
+
+  //If user is not logged in, display error
   if (!userId) {
-    return res.redirect("/login");
+    return res.send("Error: Please login.");
   }
 
   res.render("urls_index", templateVars);
@@ -89,7 +88,7 @@ app.post("/urls", (req, res) => {
 });
 
 
-//REDIRECTION to longURL 
+//REDIRECTION to longURL
 app.get("/u/:shortURL", (req,res) => {
   const urlObj = urlDatabase[req.params.shortURL];
   let longURL;
@@ -121,7 +120,7 @@ app.get("/urls/:shortURL", (req, res) => {
       res.send("Sorry, access denied");
     }
   } else {
-    templateVars.error = "Error: URL was not found"
+    templateVars.error = "Error: URL was not found";
     res.render("urls_index", templateVars);
   }
 
@@ -156,7 +155,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //LOG IN GET
 app.get('/login', (req, res) => {
   const userId = req.session.user_id;
-  const templateVars = {user: users[userId]};
+  const templateVars = {user: users[userId], error: null};
 
   if (userId) {
     return res.redirect("/urls");
@@ -180,13 +179,13 @@ app.post('/login', (req, res) => {
 //LOG OUT
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //REGISTER GET
 app.get('/register', (req, res) => {
   const userId = req.session["user_id"];
-  const templateVars = { error: null }
+  const templateVars = { error: null };
 
   if (userId) {
     return res.redirect("/urls");
