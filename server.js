@@ -39,7 +39,12 @@ app.listen(port, () => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Welcome!");
+  const userId = req.session["user_id"];
+  if (userId) {
+    return res.redirect("/urls");
+  } else {
+    return res.redirect("/login");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -176,7 +181,7 @@ app.post("/logout", (req, res) => {
 //REGISTER GET
 app.get('/register', (req, res) => {
   const userId = req.session["user_id"];
-  const templateVars = {user: users[userId]};
+  const templateVars = { error: null }
 
   if (userId) {
     return res.redirect("/urls");
@@ -188,11 +193,14 @@ app.get('/register', (req, res) => {
 //REGISTER POST
 app.post('/register', (req, res) => {
   const {email, password } = req.body;
- 
+  const templateVars = { error: null };
+
   if (email === '') {
-    return res.status(400).send("Please enter email");
+    templateVars.error = "Error: Please enter email";
+    return res.render('register', templateVars);
   } else if (password === '') {
-    return res.status(400).send("Please enter password");
+    templateVars.error = "Error: Please enter password";
+    return res.render('register', templateVars);
   }
 
   if (existingUser(users, email)) { //If true, the user already exists
