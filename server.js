@@ -55,8 +55,8 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
   const userUrlDatabase = urlsForUser(userId, urlDatabase);
-  const templateVars = {user: userId, urls: userUrlDatabase };
-
+  const templateVars = {user: users[userId], urls: userUrlDatabase, error: null };
+  console.log(userUrlDatabase);
   //If user is not logged in, redirect to login page
   if (!userId) {
     return res.redirect("/login");
@@ -102,11 +102,12 @@ app.get("/u/:shortURL", (req,res) => {
   res.redirect(longURL);
 });
 
-//SHOW SHORTURL DETAIL GET
+//SHOW SHORT URL DETAIL GET
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session["user_id"];
   const shortURL = req.params.shortURL;
-  const templateVars = {user: users[userId], shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
+  const userUrlDatabase = urlsForUser(userId, urlDatabase);
+  const templateVars = {user: users[userId], shortURL, error: null, urls: userUrlDatabase };
   
   if (!userId) {
     return res.send("Please log in to access the URLs");
@@ -114,10 +115,14 @@ app.get("/urls/:shortURL", (req, res) => {
 
   if (urlDatabase[shortURL]) {
     if (urlDatabase[shortURL].userID === userId) {
+      templateVars.longURL = urlDatabase[shortURL].longURL;
       res.render("urls_show", templateVars);
     } else {
       res.send("Sorry, access denied");
     }
+  } else {
+    templateVars.error = "Error: URL was not found"
+    res.render("urls_index", templateVars);
   }
 
 });
