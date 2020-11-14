@@ -55,7 +55,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   const userId = req.session["user_id"];
   const userUrlDatabase = urlsForUser(userId, urlDatabase);
-  const templateVars = {user: users[userId], urls: userUrlDatabase };
+  const templateVars = {user: userId, urls: userUrlDatabase };
 
   //If user is not logged in, redirect to login page
   if (!userId) {
@@ -208,5 +208,5 @@ app.post('/register', (req, res) => {
   }
   const userId = addNewUser(email, password, users);
   req.session['user_id'] = userId;
-  res.redirect('/urls');
+  res.redirect("/urls");
 });

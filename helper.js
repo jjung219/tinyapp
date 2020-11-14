@@ -53,7 +53,7 @@ const urlsForUser = (id, urlDb) => {
 //Function that adds a new user
 //Used in the REGISTER POST
 const addNewUser = (email, password, userDb) => {
-  const userId = generateRandomString;
+  const userId = generateRandomString();
   
   const newUserObj = {
     id: userId,
