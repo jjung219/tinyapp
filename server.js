@@ -179,7 +179,7 @@ app.post('/login', (req, res) => {
 //LOG OUT
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/login");
+  res.redirect("/urls");
 });
 
 //REGISTER GET
