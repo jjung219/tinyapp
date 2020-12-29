@@ -16,7 +16,7 @@
     "nodemon": "^2.0.6"
   },
   "scripts": {
-    "start": "./node_modules/.bin/nodemon -L server.js",
+    "start": "node server.js",
     "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
