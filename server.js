@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const cookieSession = require('cookie-session');
-const port = 8080;
+const PORT = process.env.PORT || 5000;
 
 const { existingUser, validateUser, getUserByEmail, urlsForUser, addNewUser, generateRandomString } = require('./helper');
 
@@ -33,8 +33,8 @@ const users = {
   }
 };
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`);
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
 
 app.get("/", (req, res) => {
